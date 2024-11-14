@@ -1,8 +1,8 @@
-# Racong: A Pong Game!
+# Raycong: A Pong Game!
 
-Racong is a simple pong game made using the C programming language with the help of [Raylib](https://www.raylib.com) library.
+Raycong is a simple pong game made using the C programming language with the help of [Raylib](https://www.raylib.com) library.
 
-Racong is my first C project after learning C programming in my first semester of college.
+Raycong is my first C project after learning C programming in my first semester of college.
 
 ## Development
 I followed [this](https://youtu.be/VLJlTaFvHo4) YouTube tutorial while developing this project. In the tutorial, the language used is C++ but I have used C in this game. 
