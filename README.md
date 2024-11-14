@@ -1,8 +1,8 @@
-# Racong: A Pong Game!
+# Raycong: A Pong Game!
 
-Racong is a simple pong game made using the C programming language with the help of [Raylib](https://www.raylib.com) library.
+Raycong is a simple pong game made using the C programming language with the help of [Raylib](https://www.raylib.com) library.
 
-Racong is my first C project after learning C programming in my first semester of college.
+Raycong is my first C project after learning C programming in my first semester of college.
 
 ## Development
 I followed [this](https://youtu.be/VLJlTaFvHo4) YouTube tutorial while developing this project. In the tutorial, the language used is C++ but I have used C in this game. 
@@ -16,7 +16,7 @@ If you just wanna play the game, you can download only the ```main.exe``` file a
 To setup this project locally on your windows machine:
 1. Install Raylib using one of their binary [releases](https://github.com/raysan5/raylib/releases) on GitHub.
 2. Install VScode. 
-3. Clone or download this repository and open the Racong folder in VScode (or alternatively, just open the  ```main.code-workspace``` file). 
+3. Clone or download this repository and open the Raycong folder in VScode (or alternatively, just open the  ```main.code-workspace``` file). 
 4. Open the ```main.c``` file and press ```F5``` or ```Fn + F5``` to build the project. 
 5. You're ready to make your own changes to the project!
 

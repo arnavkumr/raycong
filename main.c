@@ -43,7 +43,7 @@ int main(void)
     const int screen_height = 800;
     printf("Starting the game...");
 
-    InitWindow(screen_width, screen_height, "Racong: A Pong Game!"); // Initialize window and OpenGL context
+    InitWindow(screen_width, screen_height, "Raycong: A Pong Game!"); // Initialize window and OpenGL context
     SetTargetFPS(60);                                // Set target FPS (maximum)
 
     struct Ball ball; // Create an instance named ball of the struct Ball
