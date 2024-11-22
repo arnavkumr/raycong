@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "raylib.h"
 
-int player_score = 0; // Initialise player score
+int player_score = 0;   // Initialise player score
 int computer_score = 0; // Initialise computer score
 
 Color Dark_Blue = (Color){0, 153, 255, 255};
@@ -33,6 +33,12 @@ void DrawPlayerPaddle(struct Paddle *);
 void DrawComputerPaddle(struct Paddle *);
 void ResetBall(struct Ball *);
 
+typedef enum GameScreen
+{
+    TITLE = 0,
+    GAMEPLAY
+} GameScreen;
+
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -44,7 +50,9 @@ int main(void)
     printf("Starting the game...");
 
     InitWindow(screen_width, screen_height, "Raycong: A Pong Game!"); // Initialize window and OpenGL context
-    SetTargetFPS(60);                                // Set target FPS (maximum)
+    SetTargetFPS(60);                                                 // Set target FPS (maximum)
+
+    Texture2D start_button = LoadTexture("resources/button_rectangle_depth_border.png");
 
     struct Ball ball; // Create an instance named ball of the struct Ball
 
@@ -73,36 +81,79 @@ int main(void)
     computer.y = screen_height / 2 - computer.height / 2;
     computer.speed = 8;
 
+    GameScreen current_screen = TITLE;
+    Rectangle start_button_bounds = {(screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.0f - start_button.height / 2.0f), (float)start_button.width, (float)start_button.height};
+    Vector2 mouse_point = {0.0f, 0.0f}; // Initialise mouse point at (0, 0)
+
     // Game Loop
     while (WindowShouldClose() == false)
     {
+        mouse_point = GetMousePosition();
+
+        switch (current_screen)
+        {
+        case TITLE:
+            // Check if START button pressed
+            if (CheckCollisionPointRec(mouse_point, start_button_bounds))
+            {
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    current_screen = GAMEPLAY;
+                }
+            }
+
+            if (IsKeyPressed(KEY_ENTER))
+            {
+                current_screen = GAMEPLAY;
+            }
+            break;
+        case GAMEPLAY:
+            // Press P to pause the game
+            if (IsKeyPressed(KEY_P))
+            {
+                current_screen = TITLE;
+            }
+            break;
+        }
+
         BeginDrawing(); // Setup canvas (framebuffer) to start drawing
 
-        // Updating
-        UpdateBall(&ball);
-        UpdatePlayerPaddle(&player);
-        UpdateComputerPaddle(&computer, &ball);
+        switch (current_screen)
+        {
+        case TITLE:
+            DrawTexture(start_button, (screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.0f - start_button.height / 2.0f), RAYWHITE);
+            DrawText("START", (screen_width / 2.0f - start_button.width / 2.0f) + 30, (screen_height / 2.0f - start_button.height / 2.0f) + 20, 90, BLACK);
+            ClearBackground(SKYBLUE);
+            break;
+        case GAMEPLAY:
+            // Updating
+            UpdateBall(&ball);
+            UpdatePlayerPaddle(&player);
+            UpdateComputerPaddle(&computer, &ball);
 
-        // Collision detection
-        if (CheckCollisionCircleRec((Vector2){ball.x, ball.y}, ball.radius, (Rectangle){player.x, player.y, player.width, player.height}))
-            ball.speed_x *= -1;
-        if (CheckCollisionCircleRec((Vector2){ball.x, ball.y}, ball.radius, (Rectangle){computer.x, computer.y, computer.width, computer.height}))
-            ball.speed_x *= -1;
+            // Collision detection
+            if (CheckCollisionCircleRec((Vector2){ball.x, ball.y}, ball.radius, (Rectangle){player.x, player.y, player.width, player.height}))
+                ball.speed_x *= -1;
+            if (CheckCollisionCircleRec((Vector2){ball.x, ball.y}, ball.radius, (Rectangle){computer.x, computer.y, computer.width, computer.height}))
+                ball.speed_x *= -1;
 
-        // Drawing
-        ClearBackground(Blue);
-        DrawRectangle(screen_width/2, 0, screen_width/2, screen_height, Dark_Blue);
-        DrawCircle(screen_width/2, screen_height/2, 150, Light_Blue);
-        DrawBall(&ball); // Same as "DrawCircle(ball.x, ball.y, ball.radius, RAYWHITE);"
-        DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, RAYWHITE);
-        DrawPlayerPaddle(&player);     // Same as "DrawRectangle(1245, (screen_height / 2 - 60), 25, 120, RAYWHITE);"
-        DrawComputerPaddle(&computer); // Same as "DrawRectangle(10, (screen_height / 2 - 60), 25, 120, RAYWHITE);"
-        DrawText(TextFormat("%d", computer_score), screen_width/4 - 20, 20, 80, RAYWHITE);
-        DrawText(TextFormat("%d", player_score), ((3*screen_width)/4) - 20, 20, 80, RAYWHITE);
+            // Drawing
+            ClearBackground(Blue);
+            DrawRectangle(screen_width / 2, 0, screen_width / 2, screen_height, Dark_Blue);
+            DrawCircle(screen_width / 2, screen_height / 2, 150, Light_Blue);
+            DrawBall(&ball); // Same as "DrawCircle(ball.x, ball.y, ball.radius, RAYWHITE);"
+            DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, RAYWHITE);
+            DrawPlayerPaddle(&player);     // Same as "DrawRectangle(1245, (screen_height / 2 - 60), 25, 120, RAYWHITE);"
+            DrawComputerPaddle(&computer); // Same as "DrawRectangle(10, (screen_height / 2 - 60), 25, 120, RAYWHITE);"
+            DrawText(TextFormat("%d", computer_score), screen_width / 4 - 20, 20, 80, RAYWHITE);
+            DrawText(TextFormat("%d", player_score), ((3 * screen_width) / 4) - 20, 20, 80, RAYWHITE);
+            break;
+        }
 
         EndDrawing(); // End canvas drawing and swap buffers (double buffering)
     }
 
+    UnloadTexture(start_button);
     CloseWindow(); // Close window and unload OpenGL context
     return 0;
 }
@@ -174,9 +225,10 @@ void DrawComputerPaddle(struct Paddle *c)
     DrawRectangleRounded((Rectangle){c->x, c->y, c->width, c->height}, 0.8, 0, WHITE);
 }
 
-void ResetBall(struct Ball *b) {
-    b->x = GetScreenHeight()/2.0;
-    b->y = GetScreenWidth()/2.0;
+void ResetBall(struct Ball *b)
+{
+    b->x = GetScreenHeight() / 2.0;
+    b->y = GetScreenWidth() / 2.0;
 
     int speed_choice[2] = {-1, 1};
     b->speed_x *= speed_choice[GetRandomValue(0, 1)];
