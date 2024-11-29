@@ -26,7 +26,9 @@ struct Paddle
 
 // Function prototypes
 void UpdateBall(struct Ball *);
-void UpdatePlayerPaddle(struct Paddle *);
+void UpdatePlayerPaddle(struct Paddle *);  // Function for player paddle when local multiplayer is disabled
+void UpdatePlayer1Paddle(struct Paddle *); // Function for player1 paddle when local multiplayer is enabled
+void UpdatePlayer2Paddle(struct Paddle *); // Function for player2 paddle when local multiplayer is enabled
 void UpdateComputerPaddle(struct Paddle *, struct Ball *);
 void DrawBall(struct Ball *);
 void DrawPlayerPaddle(struct Paddle *);
@@ -53,6 +55,8 @@ int main(void)
     SetTargetFPS(60);                                                 // Set target FPS (maximum)
 
     Texture2D start_button = LoadTexture("resources/button_rectangle_depth_border.png");
+    Texture2D check_box = LoadTexture("resources/check_square_grey.png");
+    Texture2D check_box_clicked = LoadTexture("resources/check_square_grey_square.png");
 
     struct Ball ball; // Create an instance named ball of the struct Ball
 
@@ -82,32 +86,60 @@ int main(void)
     computer.speed = 8;
 
     GameScreen current_screen = TITLE;
-    Rectangle start_button_bounds = {(screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.0f - start_button.height / 2.0f), (float)start_button.width, (float)start_button.height};
+    Rectangle start_button_bounds = {(screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.5f - start_button.height / 2.0f), (float)start_button.width, (float)start_button.height};
+    Rectangle localmultiplayer_button_bounds = {(screen_width / 2.0f - start_button.width), (screen_height / 2.0f), (float)check_box.width, (float)check_box.height};
     Vector2 mouse_point = {0.0f, 0.0f}; // Initialise mouse point at (0, 0)
+    bool is_mouse_over_start_button = false;
+    bool is_mouse_over_localmultiplyaer_button = false;
+    Texture2D localmultiplayer_button_state = check_box;
 
     // Game Loop
     while (WindowShouldClose() == false)
     {
         mouse_point = GetMousePosition();
+        is_mouse_over_start_button = CheckCollisionPointRec(mouse_point, start_button_bounds);
+        is_mouse_over_localmultiplyaer_button = CheckCollisionPointRec(mouse_point, localmultiplayer_button_bounds);
 
         switch (current_screen)
         {
         case TITLE:
-            // Check if START button pressed
-            if (CheckCollisionPointRec(mouse_point, start_button_bounds))
+            // Logic for PLAY button
+            if (is_mouse_over_start_button)
             {
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+
+                // Check if PLAY button pressed
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     current_screen = GAMEPLAY;
                 }
             }
+            else
+            {
+                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+            }
 
-            if (IsKeyPressed(KEY_ENTER))
+            // Logic for Local Multiplayer button
+            if (is_mouse_over_localmultiplyaer_button)
+            {
+                if (localmultiplayer_button_state.id == check_box.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    localmultiplayer_button_state = check_box_clicked;
+                }
+                else if (localmultiplayer_button_state.id == check_box_clicked.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    localmultiplayer_button_state = check_box;
+                }
+            }
+
+            if (IsKeyPressed(KEY_SPACE))
             {
                 current_screen = GAMEPLAY;
             }
             break;
         case GAMEPLAY:
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+
             // Press P to pause the game
             if (IsKeyPressed(KEY_P))
             {
@@ -121,15 +153,28 @@ int main(void)
         switch (current_screen)
         {
         case TITLE:
-            DrawTexture(start_button, (screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.0f - start_button.height / 2.0f), RAYWHITE);
-            DrawText("START", (screen_width / 2.0f - start_button.width / 2.0f) + 30, (screen_height / 2.0f - start_button.height / 2.0f) + 20, 90, BLACK);
+            DrawText("Raycong", 300, 10, 150, RAYWHITE);
+            DrawTexture(start_button, (screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.5f - start_button.height / 2.0f), RAYWHITE);
+            DrawText("PLAY", (screen_width / 2.0f - start_button.width / 2.0f) + 40, (screen_height / 2.5f - start_button.height / 2.0f) + 10, 85, BLACK);
+            DrawTexture(localmultiplayer_button_state, (screen_width / 2.0f - start_button.width), (screen_height / 2.0f) + 10, RAYWHITE);
+            DrawText("Local Multiplayer", (screen_width / 2.0f - start_button.width) + 60, (screen_height / 2.0f) + 15, 40, RAYWHITE);
             ClearBackground(SKYBLUE);
             break;
         case GAMEPLAY:
             // Updating
             UpdateBall(&ball);
-            UpdatePlayerPaddle(&player);
-            UpdateComputerPaddle(&computer, &ball);
+
+            // Check if local multiplayer is enabled
+            if (localmultiplayer_button_state.id == check_box_clicked.id)
+            {
+                UpdatePlayer1Paddle(&computer);
+                UpdatePlayer2Paddle(&player);
+            }
+            else
+            {
+                UpdatePlayerPaddle(&player);
+                UpdateComputerPaddle(&computer, &ball);
+            }
 
             // Collision detection
             if (CheckCollisionCircleRec((Vector2){ball.x, ball.y}, ball.radius, (Rectangle){player.x, player.y, player.width, player.height}))
@@ -153,7 +198,14 @@ int main(void)
         EndDrawing(); // End canvas drawing and swap buffers (double buffering)
     }
 
+    // De-Initialization
+    //--------------------------------------------------------------------------------------
+
+    // Unload textures from GPU memory (VRAM)
     UnloadTexture(start_button);
+    UnloadTexture(check_box);
+    UnloadTexture(check_box_clicked);
+
     CloseWindow(); // Close window and unload OpenGL context
     return 0;
 }
@@ -196,8 +248,39 @@ void UpdatePlayerPaddle(struct Paddle *p)
         p->y = GetScreenHeight() - p->height;
 }
 
+void UpdatePlayer1Paddle(struct Paddle *c)
+{
+    // Move the Paddle
+    if (IsKeyDown(KEY_W))
+        c->y -= c->speed;
+    if (IsKeyDown(KEY_S))
+        c->y += c->speed;
+
+    // Limit movement
+    if (c->y <= 0)
+        c->y = 0;
+    if (c->y + c->height >= GetScreenHeight())
+        c->y = GetScreenHeight() - c->height;
+}
+
+void UpdatePlayer2Paddle(struct Paddle *p)
+{
+    // Move the Paddle
+    if (IsKeyDown(KEY_UP))
+        p->y -= p->speed;
+    if (IsKeyDown(KEY_DOWN))
+        p->y += p->speed;
+
+    // Limit movement
+    if (p->y <= 0)
+        p->y = 0;
+    if (p->y + p->height >= GetScreenHeight())
+        p->y = GetScreenHeight() - p->height;
+}
+
 void UpdateComputerPaddle(struct Paddle *c, struct Ball *b)
 {
+    // Move the Paddle
     if (c->y + c->height / 2 > b->y)
         c->y -= c->speed;
     if (c->y + c->height / 2 < b->y)
