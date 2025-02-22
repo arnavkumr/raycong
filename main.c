@@ -57,6 +57,8 @@ int main(void)
     Texture2D start_button = LoadTexture("resources/button_rectangle_depth_border.png");
     Texture2D check_box = LoadTexture("resources/check_square_grey.png");
     Texture2D check_box_clicked = LoadTexture("resources/check_square_grey_square.png");
+    Texture2D radio_button = LoadTexture("resources/check_round_grey.png");
+    Texture2D radio_button_clicked = LoadTexture("resources/check_round_grey_circle.png");
 
     struct Ball ball; // Create an instance named ball of the struct Ball
 
@@ -87,14 +89,23 @@ int main(void)
 
     GameScreen current_screen = TITLE;
     Rectangle start_button_bounds = {(screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.5f - start_button.height / 2.0f), (float)start_button.width, (float)start_button.height};
-    Rectangle localmultiplayer_button_bounds = {(screen_width / 2.0f - start_button.width), (screen_height / 2.0f), (float)check_box.width, (float)check_box.height};
-    Rectangle endless_game_button_bounds = {(screen_width / 2.0f - start_button.width), (screen_height / 1.7f), (float)check_box.width, (float)check_box.height};
+    Rectangle localmultiplayer_button_bounds = {(screen_width / 2.0f - start_button.width / 1.4f), (screen_height / 2.0f), (float)check_box.width, (float)check_box.height};
+    Rectangle endless_game_button_bounds = {(screen_width / 2.0f - start_button.width / 1.4f), (screen_height / 1.7f), (float)check_box.width, (float)check_box.height};
+    Rectangle relaxed_button_bounds = {(screen_width / 2.0f - start_button.width / 0.9f), (screen_height / 1.3f), (float)radio_button.width, (float)radio_button.height};
+    Rectangle fast_button_bounds = {(screen_width / 2.0f - start_button.width / 3.5f), (screen_height / 1.3f), (float)radio_button.width, (float)radio_button.height};
+    Rectangle lightning_button_bounds = {(screen_width / 2.0f + start_button.width / 3.0f), (screen_height / 1.3f), (float)radio_button.width, (float)radio_button.height};
     Vector2 mouse_point = {0.0f, 0.0f}; // Initialise mouse point at (0, 0)
     bool is_mouse_over_start_button = false;
     bool is_mouse_over_localmultiplyaer_button = false;
     bool is_mouse_over_endless_game_button = false;
+    bool is_mouse_over_relaxed_button = false;
+    bool is_mouse_over_fast_button = false;
+    bool is_mouse_over_lightning_button = false;
     Texture2D localmultiplayer_button_state = check_box;
     Texture2D endless_game_button_state = check_box;
+    Texture2D relaxed_button_state = radio_button_clicked;
+    Texture2D fast_button_state = radio_button;
+    Texture2D lightning_button_state = radio_button;
 
     // Game Loop
     while (WindowShouldClose() == false)
@@ -103,6 +114,9 @@ int main(void)
         is_mouse_over_start_button = CheckCollisionPointRec(mouse_point, start_button_bounds);
         is_mouse_over_localmultiplyaer_button = CheckCollisionPointRec(mouse_point, localmultiplayer_button_bounds);
         is_mouse_over_endless_game_button = CheckCollisionPointRec(mouse_point, endless_game_button_bounds);
+        is_mouse_over_relaxed_button = CheckCollisionPointRec(mouse_point, relaxed_button_bounds);
+        is_mouse_over_fast_button = CheckCollisionPointRec(mouse_point, fast_button_bounds);
+        is_mouse_over_lightning_button = CheckCollisionPointRec(mouse_point, lightning_button_bounds);
 
         switch (current_screen)
         {
@@ -149,6 +163,62 @@ int main(void)
                 }
             }
 
+            // Logic for Relaxed button
+            if (is_mouse_over_relaxed_button)
+            {
+                if (relaxed_button_state.id == radio_button.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    relaxed_button_state = radio_button_clicked;
+                    fast_button_state = radio_button;
+                    lightning_button_state = radio_button;
+                }
+            }
+
+            // Logic for Fast button
+            if (is_mouse_over_fast_button)
+            {
+                if (fast_button_state.id == radio_button.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    fast_button_state = radio_button_clicked;
+                    relaxed_button_state = radio_button;
+                    lightning_button_state = radio_button;
+                }
+            }
+
+            // Logic for Lightning button
+            if (is_mouse_over_lightning_button)
+            {
+                if (lightning_button_state.id == radio_button.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    lightning_button_state = radio_button_clicked;
+                    relaxed_button_state = radio_button;
+                    fast_button_state = radio_button;
+                }
+            }
+
+            // Logic for changing speed of the ball and paddle based on game pace
+            if (relaxed_button_state.id == radio_button_clicked.id)
+            {
+                ball.speed_x = -7;
+                ball.speed_y = -7;
+                player.speed = 6;
+                computer.speed = 6;
+            }
+            else if (fast_button_state.id == radio_button_clicked.id)
+            {
+                ball.speed_x = -10;
+                ball.speed_y = -10;
+                player.speed = 8;
+                computer.speed = 8;
+            }
+            else if (lightning_button_state.id == radio_button_clicked.id)
+            {
+                ball.speed_x = -13;
+                ball.speed_y = -13;
+                player.speed = 10;
+                computer.speed = 10;
+            }
+
             if (IsKeyPressed(KEY_SPACE))
             {
                 current_screen = GAMEPLAY;
@@ -181,13 +251,29 @@ int main(void)
         {
         case TITLE:
             DrawText("Raycong", 300, 10, 150, RAYWHITE);
+
             DrawTexture(start_button, (screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.5f - start_button.height / 2.0f), RAYWHITE);
             DrawText("PLAY", (screen_width / 2.0f - start_button.width / 2.0f) + 40, (screen_height / 2.5f - start_button.height / 2.0f) + 10, 85, BLACK);
-            DrawTexture(localmultiplayer_button_state, (screen_width / 2.0f - start_button.width), (screen_height / 2.0f) + 10, RAYWHITE);
-            DrawText("Local Multiplayer", (screen_width / 2.0f - start_button.width) + 60, (screen_height / 2.0f) + 15, 40, RAYWHITE);
-            DrawTexture(endless_game_button_state, (screen_width / 2.0f - start_button.width), (screen_height / 1.7f) + 10, RAYWHITE);
-            DrawText("Endless Game", (screen_width / 2.0f - start_button.width) + 60, (screen_height / 1.7f) + 15, 40, RAYWHITE);
+
+            DrawTexture(localmultiplayer_button_state, (screen_width / 2.0f - start_button.width / 1.4f), (screen_height / 2.0f) + 10, RAYWHITE);
+            DrawText("Local Multiplayer", (screen_width / 2.0f - start_button.width / 1.4f) + 60, (screen_height / 2.0f) + 15, 40, RAYWHITE);
+
+            DrawTexture(endless_game_button_state, (screen_width / 2.0f - start_button.width / 1.4f), (screen_height / 1.7f) + 10, RAYWHITE);
+            DrawText("Endless Game", (screen_width / 2.0f - start_button.width / 1.4f) + 60, (screen_height / 1.7f) + 15, 40, RAYWHITE);
+
+            DrawText("Game Pace", (screen_width / 2.0f - start_button.width / 3.0f), (screen_height / 1.4f), 40, RAYWHITE);
+
+            DrawText("Relaxed", (screen_width / 2.0f - start_button.width / 0.9f) + 60, (screen_height / 1.3f) + 15, 40, RAYWHITE);
+            DrawTexture(relaxed_button_state, (screen_width / 2.0f - start_button.width / 0.9f), (screen_height / 1.3f) + 10, RAYWHITE);
+
+            DrawText("Fast", (screen_width / 2.0f - start_button.width / 3.5f) + 60, (screen_height / 1.3f) + 15, 40, RAYWHITE);
+            DrawTexture(fast_button_state, (screen_width / 2.0f - start_button.width / 3.5f), (screen_height / 1.3f) + 10, RAYWHITE);
+
+            DrawText("Lightning", (screen_width / 2.0f + start_button.width / 3.0f) + 60, (screen_height / 1.3f) + 15, 40, RAYWHITE);
+            DrawTexture(lightning_button_state, (screen_width / 2.0f + start_button.width / 3.0f), (screen_height / 1.3f) + 10, RAYWHITE);
+
             ClearBackground(SKYBLUE);
+
             break;
         case GAMEPLAY:
             // Updating
@@ -234,6 +320,8 @@ int main(void)
     UnloadTexture(start_button);
     UnloadTexture(check_box);
     UnloadTexture(check_box_clicked);
+    UnloadTexture(radio_button);
+    UnloadTexture(radio_button_clicked);
 
     CloseWindow(); // Close window and unload OpenGL context
     return 0;
