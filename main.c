@@ -88,10 +88,13 @@ int main(void)
     GameScreen current_screen = TITLE;
     Rectangle start_button_bounds = {(screen_width / 2.0f - start_button.width / 2.0f), (screen_height / 2.5f - start_button.height / 2.0f), (float)start_button.width, (float)start_button.height};
     Rectangle localmultiplayer_button_bounds = {(screen_width / 2.0f - start_button.width), (screen_height / 2.0f), (float)check_box.width, (float)check_box.height};
+    Rectangle endless_game_button_bounds = {(screen_width / 2.0f - start_button.width), (screen_height / 1.7f), (float)check_box.width, (float)check_box.height};
     Vector2 mouse_point = {0.0f, 0.0f}; // Initialise mouse point at (0, 0)
     bool is_mouse_over_start_button = false;
     bool is_mouse_over_localmultiplyaer_button = false;
+    bool is_mouse_over_endless_game_button = false;
     Texture2D localmultiplayer_button_state = check_box;
+    Texture2D endless_game_button_state = check_box;
 
     // Game Loop
     while (WindowShouldClose() == false)
@@ -99,6 +102,7 @@ int main(void)
         mouse_point = GetMousePosition();
         is_mouse_over_start_button = CheckCollisionPointRec(mouse_point, start_button_bounds);
         is_mouse_over_localmultiplyaer_button = CheckCollisionPointRec(mouse_point, localmultiplayer_button_bounds);
+        is_mouse_over_endless_game_button = CheckCollisionPointRec(mouse_point, endless_game_button_bounds);
 
         switch (current_screen)
         {
@@ -132,6 +136,19 @@ int main(void)
                 }
             }
 
+            // Logic for Endless Game button
+            if (is_mouse_over_endless_game_button)
+            {
+                if (endless_game_button_state.id == check_box.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    endless_game_button_state = check_box_clicked;
+                }
+                else if (endless_game_button_state.id == check_box_clicked.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                {
+                    endless_game_button_state = check_box;
+                }
+            }
+
             if (IsKeyPressed(KEY_SPACE))
             {
                 current_screen = GAMEPLAY;
@@ -144,6 +161,16 @@ int main(void)
             if (IsKeyPressed(KEY_P))
             {
                 current_screen = TITLE;
+            }
+
+            if (endless_game_button_state.id != check_box_clicked.id)
+            {
+                if (player_score == 10 || computer_score == 10)
+                {
+                    current_screen = TITLE;
+                    player_score = 0;
+                    computer_score = 0;
+                }
             }
             break;
         }
@@ -158,6 +185,8 @@ int main(void)
             DrawText("PLAY", (screen_width / 2.0f - start_button.width / 2.0f) + 40, (screen_height / 2.5f - start_button.height / 2.0f) + 10, 85, BLACK);
             DrawTexture(localmultiplayer_button_state, (screen_width / 2.0f - start_button.width), (screen_height / 2.0f) + 10, RAYWHITE);
             DrawText("Local Multiplayer", (screen_width / 2.0f - start_button.width) + 60, (screen_height / 2.0f) + 15, 40, RAYWHITE);
+            DrawTexture(endless_game_button_state, (screen_width / 2.0f - start_button.width), (screen_height / 1.7f) + 10, RAYWHITE);
+            DrawText("Endless Game", (screen_width / 2.0f - start_button.width) + 60, (screen_height / 1.7f) + 15, 40, RAYWHITE);
             ClearBackground(SKYBLUE);
             break;
         case GAMEPLAY:
