@@ -4,24 +4,29 @@ Raycong is a simple pong game made using the C programming language with the hel
 
 Raycong is my first C project after learning C programming in my first semester of college.
 
-## Development
-I followed [this](https://youtu.be/VLJlTaFvHo4) YouTube tutorial while developing this project. In the tutorial, the language used is C++ but I have used C in this game. 
+![Main Menu Screenshot](resources/Main%20Menu%20Screenshot.png)
+![Gameplay Screenshot](resources/Gameplay%20Screenshot.png)
 
-I have used 'structs' instead of classes and have made use of functions with pointers to achieve the same results as using functions inside of classes in C++ as done in the tutorial.
+## Development
+I initially followed [this](https://youtu.be/VLJlTaFvHo4) YouTube tutorial while working on this project but I have since further built upon the basic game independently.
+
+In the tutorial, the programming language used was C++ but I have used C in this game. I have made use of structs, functions, and pointers in C to replicate C++ concepts such as classes and using functions inside of classes. I have also further developed the game to now have a main menu and in it, an option to enable local multiplayer, toggle endless mode and a game pace selector. 
 
 ## Playing
-If you just wanna play the game, you can download only the ```main.exe``` file and run it. The controls are ```↑``` and ```↓``` (or ```w``` and ```s```) to move up and down respectively.
+If you just wanna play the game, head on over to the [releases](https://github.com/arnavkumr/raycong/releases) page and download the latest release. Alternatively you can build the game yourself by following the steps listed in the [next section](#setup).
+
+The controls are ```↑``` and ```↓``` (or ```w``` and ```s```) to move up and down respectively. The player (your) paddle is the one on the right if local multiplayer is disabled. If local multiplayer is enabled,  ```w``` & ```s``` are used to control the left paddle and ```↑``` & ```↓``` are used to control the right paddle.
 
 ## Setup
 To setup this project locally on your windows machine:
 1. Install Raylib using one of their binary [releases](https://github.com/raysan5/raylib/releases) on GitHub.
 2. Install VScode. 
-3. Clone or download this repository and open the Raycong folder in VScode (or alternatively, just open the  ```main.code-workspace``` file). 
-4. Open the ```main.c``` file and press ```F5``` or ```Fn + F5``` to build the project. 
+3. Clone or download this repository and open the Raycong folder in VScode. 
+4. Open the ```main.c``` file and go to ```Run``` then ``` Start Debugging```  or just press ```F5``` to build the project. 
 5. You're ready to make your own changes to the project!
 
 ## Contributing
 Feel free to report any bugs by opening an issue. Also, if you'd like to contribute, I would recommend forking the project or if it's a minor bugfix/issue, a pull request would be welcome.
 
 ## Contact
-If you'd like to reach out to me personally, kindly send me an [email](mailto:contact@arnav.me) or DM/tag me over on [Mastodon](https://fosstodon.org/@arnav). 
+If you have any thoughts, suggestions or criticisms regarding the project, feel free to open a thread in the [discussions](https://github.com/arnavkumr/raycong/discussions) panel. If you'd like to reach out to me personally, kindly send me an [email](mailto:contact@arnav.me) or DM/tag me over on [Mastodon](https://fosstodon.org/@arnav).
