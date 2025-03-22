@@ -4,9 +4,15 @@
 int player_score = 0;   // Initialise player score
 int computer_score = 0; // Initialise computer score
 
+Color Dark_Green = (Color){20, 160, 133, 255};
+Color Green = (Color){38, 185, 154, 255};
+Color Light_Green = (Color){129, 204, 184, 255};
 Color Dark_Blue = (Color){0, 153, 255, 255};
 Color Blue = (Color){51, 173, 255, 255};
 Color Light_Blue = (Color){128, 204, 255, 255};
+Color Dark_Red = (Color){255, 60, 60, 255};
+Color Red = (Color){255, 80, 80, 255};
+Color Light_Red = (Color){255, 100, 100, 255};
 
 // Define Ball structure to store ball properties
 struct Ball
@@ -306,9 +312,22 @@ int main(void)
                 ball.speed_x *= -1;
 
             // Drawing
-            ClearBackground(Blue);
-            DrawRectangle(screen_width / 2, 0, screen_width / 2, screen_height, Dark_Blue);
-            DrawCircle(screen_width / 2, screen_height / 2, 150, Light_Blue);
+            if (fast_button_state.id == radio_button_clicked.id){
+                ClearBackground(Blue);
+                DrawRectangle(screen_width / 2, 0, screen_width / 2, screen_height, Dark_Blue);
+                DrawCircle(screen_width / 2, screen_height / 2, 150, Light_Blue);
+            }
+            else if (lightning_button_state.id == radio_button_clicked.id){
+                ClearBackground(Red);
+                DrawRectangle(screen_width / 2, 0, screen_width / 2, screen_height, Dark_Red);
+                DrawCircle(screen_width / 2, screen_height / 2, 150, Light_Red);
+            }
+            else{
+                ClearBackground(Green);
+                DrawRectangle(screen_width / 2, 0, screen_width / 2, screen_height, Dark_Green);
+                DrawCircle(screen_width / 2, screen_height / 2, 150, Light_Green);
+            }
+            
             DrawBall(&ball); // Same as "DrawCircle(ball.x, ball.y, ball.radius, RAYWHITE);"
             DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, RAYWHITE);
             DrawPlayerPaddle(&player);     // Same as "DrawRectangle(1245, (screen_height / 2 - 60), 25, 120, RAYWHITE);"
@@ -420,7 +439,7 @@ void UpdateComputerPaddle(struct Paddle *c, struct Ball *b)
 
 void DrawBall(struct Ball *b)
 {
-    DrawCircle(b->x, b->y, b->radius, DARKBLUE);
+    DrawCircle(b->x, b->y, b->radius, RAYWHITE);
 }
 
 void DrawPlayerPaddle(struct Paddle *p)
