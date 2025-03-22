@@ -121,6 +121,8 @@ int main(void)
         switch (current_screen)
         {
         case TITLE:
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+
             // Logic for PLAY button
             if (is_mouse_over_start_button)
             {
@@ -132,14 +134,12 @@ int main(void)
                     current_screen = GAMEPLAY;
                 }
             }
-            else
-            {
-                SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-            }
 
             // Logic for Local Multiplayer button
             if (is_mouse_over_localmultiplyaer_button)
             {
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+
                 if (localmultiplayer_button_state.id == check_box.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     localmultiplayer_button_state = check_box_clicked;
@@ -153,6 +153,8 @@ int main(void)
             // Logic for Endless Game button
             if (is_mouse_over_endless_game_button)
             {
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+
                 if (endless_game_button_state.id == check_box.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     endless_game_button_state = check_box_clicked;
@@ -166,6 +168,8 @@ int main(void)
             // Logic for Relaxed button
             if (is_mouse_over_relaxed_button)
             {
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+
                 if (relaxed_button_state.id == radio_button.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     relaxed_button_state = radio_button_clicked;
@@ -177,6 +181,8 @@ int main(void)
             // Logic for Fast button
             if (is_mouse_over_fast_button)
             {
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+
                 if (fast_button_state.id == radio_button.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     fast_button_state = radio_button_clicked;
@@ -188,6 +194,8 @@ int main(void)
             // Logic for Lightning button
             if (is_mouse_over_lightning_button)
             {
+                SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+
                 if (lightning_button_state.id == radio_button.id && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 {
                     lightning_button_state = radio_button_clicked;
